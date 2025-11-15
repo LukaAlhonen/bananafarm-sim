@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use influxdb3client::SoilMoistureMeasurement;
-    use publisher::mqtt_publisher::MqttPublisher;
+    use publisher::mqtt_publisher::{MqttPublisher, PublisherParams};
     use publisher::sensor::Sensor;
     use rumqttc::v5::{Event, Incoming};
     use subscriber::mqtt_subscriber::{MqttSubscriber, SubscriberParams};
@@ -11,13 +11,15 @@ mod tests {
     async fn test_publish_subscribe() {
         // create subscriber
         let mut sub_client = MqttSubscriber::new(SubscriberParams {
-            name: String::from("sub-test"),
             broker_address: String::from("localhost"),
             broker_port: 1884,
         });
 
         // create publisher and sensor
-        let pub_client = MqttPublisher::new("pub-test", "localhost", 1884);
+        let pub_client = MqttPublisher::new(PublisherParams {
+            broker_address: String::from("localhost"),
+            broker_port: 1884,
+        });
         let sensor = Sensor::new();
 
         // subscribe and init mpsc channel

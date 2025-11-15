@@ -17,14 +17,12 @@ async fn main() {
     let table = env::var("TABLE").expect("TABLE MUST BE SET");
 
     // Rumqtt env vars
-    let name = env::var("NAME").expect("NAME MUST BE SET");
     let topic = env::var("TOPIC").expect("TOPIC MUST BE SET");
     let broker_address = env::var("BROKER_ADDRESS").expect("BROKER_ADDRESS MUST BE SET");
     let broker_port = env::var("BROKER_PORT").expect("BROKER_PORT MUST BE SET");
 
     let db_client = InfluxDB3Client::new(db_address, token, table);
     let mut client = MqttSubscriber::new(SubscriberParams {
-        name,
         broker_address,
         broker_port: broker_port.parse().expect("Failed to parse broker port"),
     });

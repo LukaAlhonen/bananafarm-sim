@@ -9,7 +9,7 @@ use std::env;
 use std::time::Duration;
 use tokio::time;
 
-use crate::mqtt_publisher::MqttPublisher;
+use crate::mqtt_publisher::{MqttPublisher, PublisherParams};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -24,11 +24,6 @@ struct Args {
 
 #[tokio::main]
 async fn main() {
-    // Take publisher name, sensor_id and location as command line args
-    let args = Args::parse();
-    let name = args.name;
-    let location = args.location;
-
     // Init env and logger
     env_logger::init();
     dotenv::from_path("publisher/.env").ok();
@@ -37,12 +32,12 @@ async fn main() {
     let broker_address = env::var("BROKER_ADDRESS").expect("BROKER_ADDRESS MUST BE SET");
     let broker_port = env::var("BROKER_PORT").expect("BROKER_PORT MUST BE SET");
     let topic = env::var("TOPIC").expect("TOPIC MUST BE SET");
+    let location = env::var("LOCATION").expect("LOCATION MUST BE SET");
 
-    let client = MqttPublisher::new(
-        name,
+    let client = MqttPublisher::new(PublisherParams {
         broker_address,
-        broker_port.parse().expect("Failed to parse broker port"),
-    );
+        broker_port: broker_port.parse().expect("Failed to parse broker port"),
+    });
 
     let mut sensor = Sensor::new();
     sensor._seed(30.2_f32);

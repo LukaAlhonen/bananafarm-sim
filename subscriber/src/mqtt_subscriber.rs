@@ -5,6 +5,7 @@ use rumqttc::v5::{
     mqttbytes::QoS, AsyncClient, ClientError, ConnectionError, Event, EventLoop, Incoming,
     MqttOptions,
 };
+use uuid::Uuid;
 
 pub struct MqttSubscriber {
     client: AsyncClient,
@@ -12,7 +13,6 @@ pub struct MqttSubscriber {
 }
 
 pub struct SubscriberParams {
-    pub name: String,
     pub broker_address: String,
     pub broker_port: u16,
 }
@@ -20,11 +20,11 @@ pub struct SubscriberParams {
 impl MqttSubscriber {
     pub fn new(
         SubscriberParams {
-            name,
             broker_address,
             broker_port,
         }: SubscriberParams,
     ) -> Self {
+        let name = format!("sub:{}", Uuid::new_v4());
         let mut mqttoptions = MqttOptions::new(&name, &broker_address, broker_port);
         mqttoptions.set_keep_alive(Duration::from_secs(5));
         let (client, eventloop) = AsyncClient::new(mqttoptions, 10);
