@@ -21,6 +21,7 @@ async fn main() {
     let broker_address = env::var("BROKER_ADDRESS").expect("BROKER_ADDRESS MUST BE SET");
     let broker_port = env::var("BROKER_PORT").expect("BROKER_PORT MUST BE SET");
 
+    // Init db client
     let db_client = InfluxDB3Client::new(db_address, token, table);
     let mut client = MqttSubscriber::new(SubscriberParams {
         broker_address,
@@ -28,6 +29,7 @@ async fn main() {
     });
     env_logger::init();
 
+    // subscribe to the given topic
     match client.subscribe_ack(&topic).await {
         Ok(_) => info!("subscribed to topic: {}", &topic),
         Err(err) => error!("error subscribing to topic {}: {}", &topic, err),
@@ -37,6 +39,7 @@ async fn main() {
         info!("After subscribe got event: {:?}", event);
     }
 
+    // init mpsc channel
     let (tx, mut rx) = mpsc::channel::<SoilMoistureMeasurement>(100);
 
     // separate thread for writing to database

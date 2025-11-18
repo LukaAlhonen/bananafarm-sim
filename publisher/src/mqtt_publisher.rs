@@ -27,7 +27,7 @@ impl MqttPublisher {
         mqttoptions.set_keep_alive(Duration::from_secs(5));
         let (client, mut eventloop) = AsyncClient::new(mqttoptions, 10);
 
-        // start background poll when client is created
+        // start background poll when client is created so published messages do not get stuck
         task::spawn(async move {
             loop {
                 match eventloop.poll().await {
