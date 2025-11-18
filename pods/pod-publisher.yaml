@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
     - name: publisher
-      image: ghcr.io/lukaalhonen/bananafarm-sim:publisher-beta
+      image: ghcr.io/lukaalhonen/bananafarm-sim:publisher-latest
       imagePullPolicy: IfNotPresent
       env:
         - name: TOPIC

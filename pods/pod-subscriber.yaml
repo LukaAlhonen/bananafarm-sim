@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
     - name: subscriber
-      image: ghcr.io/lukaalhonen/bananafarm-sim:subscriber-beta
+      image: ghcr.io/lukaalhonen/bananafarm-sim:subscriber-latest
       imagePullPolicy: IfNotPresent
       env:
         - name: INFLUXDB_TOKEN
