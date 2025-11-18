@@ -4,6 +4,7 @@ use tokio::time::{Duration, sleep};
 
 use crate::SoilMoistureMeasurement;
 
+// Represents a client that can push data into an influxdb3-core database
 pub struct InfluxDB3Client {
     client: Client,
     url: String,
@@ -21,6 +22,7 @@ impl InfluxDB3Client {
         }
     }
 
+    // write a measurement to the database
     pub async fn write_query(
         &self,
         measurement: &SoilMoistureMeasurement,
@@ -40,6 +42,7 @@ impl InfluxDB3Client {
         Ok(res.status().is_success())
     }
 
+    // if the query fails, this method retries the operation until max_retires has been reached
     pub async fn write_query_with_retry(
         &self,
         measurement: &SoilMoistureMeasurement,

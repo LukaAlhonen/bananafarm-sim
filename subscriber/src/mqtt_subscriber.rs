@@ -7,6 +7,7 @@ use rumqttc::v5::{
 };
 use uuid::Uuid;
 
+// represents an mqtt subscriber
 pub struct MqttSubscriber {
     client: AsyncClient,
     eventloop: EventLoop,
@@ -58,6 +59,7 @@ impl MqttSubscriber {
         Ok(())
     }
 
+    // polls the eventloop for any messages
     pub async fn poll(&mut self) -> Result<Event, ConnectionError> {
         self.eventloop.poll().await
     }
