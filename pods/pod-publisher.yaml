@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: publisher-test
+spec:
+  containers:
+    - name: publisher
+      image: ghcr.io/lukaalhonen/bananafarm-sim:publisher-latest
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: TOPIC
+          value: "bananafarm/soil_moisture"
+        - name: BROKER_ADDRESS
+          value: "mosquitto"
+        - name: BROKER_PORT
+          value: "1883"
+        - name: LOCATION
+          value: "loc-1"
+  nodeSelector:
+    role: publisher

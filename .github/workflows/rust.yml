@@ -2,21 +2,39 @@ name: Rust
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: ["main", "dev"]
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: ["main", "dev"]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
-    runs-on: self-hosted
-
+  cargo-build:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+      - uses: actions/checkout@v4
+      - name: Build
+        run: cargo build --verbose
+
+  cargo-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start test mosquitto broker
+        run: |
+          docker run -d --name test_broker -p 1884:1883 eclipse-mosquitto \
+          sh -c "echo 'listener 1883 0.0.0.0' > /tmp/mosquitto.conf && \
+          echo 'allow_anonymous true' >> /tmp/mosquitto.conf && \
+          mosquitto -c /tmp/mosquitto.conf -v"
+      - name: Start test influxdb3
+        run: |
+          docker run -d --name test_db -p 8182:8181 influxdb:3-core \
+          influxdb3 serve --without-auth --node-id=node0
+      - name: Run tests
+        run: cargo test --verbose
+      - name: Shutdown containers
+        if: always()
+        run: |
+          docker stop test_broker test_db || true
+          docker rm test_broker test_db || true

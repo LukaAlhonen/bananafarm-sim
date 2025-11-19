@@ -1,0 +1,11 @@
+[package]
+name = "integration"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+publisher = { path = "../publisher" }
+subscriber = { path = "../subscriber" }
+influxdb3client = { path = "../influxdb3client" }
+tokio = { version = "1.48.0", features = ["full"] }
+rumqttc = "0.24.0"

@@ -17,20 +17,20 @@ async fn main() {
     let table = env::var("TABLE").expect("TABLE MUST BE SET");
 
     // Rumqtt env vars
-    let name = env::var("NAME").expect("NAME MUST BE SET");
     let topic = env::var("TOPIC").expect("TOPIC MUST BE SET");
     let broker_address = env::var("BROKER_ADDRESS").expect("BROKER_ADDRESS MUST BE SET");
     let broker_port = env::var("BROKER_PORT").expect("BROKER_PORT MUST BE SET");
 
+    // Init db client
     let db_client = InfluxDB3Client::new(db_address, token, table);
     let mut client = MqttSubscriber::new(SubscriberParams {
-        name,
         broker_address,
         broker_port: broker_port.parse().expect("Failed to parse broker port"),
     });
     env_logger::init();
 
-    match client.subscribe(&topic).await {
+    // subscribe to the given topic
+    match client.subscribe_ack(&topic).await {
         Ok(_) => info!("subscribed to topic: {}", &topic),
         Err(err) => error!("error subscribing to topic {}: {}", &topic, err),
     }
@@ -39,6 +39,7 @@ async fn main() {
         info!("After subscribe got event: {:?}", event);
     }
 
+    // init mpsc channel
     let (tx, mut rx) = mpsc::channel::<SoilMoistureMeasurement>(100);
 
     // separate thread for writing to database

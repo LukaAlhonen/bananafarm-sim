@@ -3,7 +3,8 @@ use serde_json::Error as SerdeError;
 use std::time::{SystemTime, UNIX_EPOCH};
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize, Debug)]
+// Represents the shape a soil moisture measurement has in the time-series database
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct SoilMoistureMeasurement {
     time: i64,
     data: f32,
@@ -28,16 +29,19 @@ impl SoilMoistureMeasurement {
         }
     }
 
+    // convert mqtt payload into SoilMoistureMeasurement
     pub fn from_payload(payload: &str) -> Result<Self, SerdeError> {
         let measurement: SoilMoistureMeasurement = serde_json::from_str(payload)?;
         Ok(measurement)
     }
 
+    // convert SoilMoistureMeasurement into mqtt payload
     pub fn into_payload(&self) -> Result<String, SerdeError> {
         let payload = serde_json::to_string(&self)?;
         Ok(payload)
     }
 
+    // convert SoilMoistureMeasurement into string that the influxdb3 api understands
     pub fn into_query_string(&self, table: &str) -> String {
         let query_string = format!(
             "{0},id={1},sensor_id={2},location={3},unit={4} data={5:.5} {6}",

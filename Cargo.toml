@@ -4,6 +4,7 @@ members = [
   "publisher",
   "subscriber",
   "influxdb3client",
+  "integration"
 ]
 
 resolver = "2"
